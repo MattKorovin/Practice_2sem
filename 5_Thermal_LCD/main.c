@@ -189,19 +189,19 @@ void heater(void) {
 	if(heaterStatus & HEATER_USE) {
 		if((heaterStatus & HEATER_ON) && (tempMedian >= tempHeat)) {
 			heaterStatus &= ~HEATER_ON;
-			// Вызываем LCD
+			// Выключаем нагреватель
 		}
 		else if (!(heaterStatus & HEATER_ON) && (tempMedian < tempHeat - 8) && (tempHeat > 8)){
 			heaterStatus |= HEATER_ON;
-			// Вызываем LCD
+			// Включаем нагреватель
 		}
 	}
 }
 
 
 
-// Конфигурация дисплея
-void setConf_LCD(void) {
+// Конфигурация программного прерывания
+void setConf_PendSV(void) {
 	NVIC_SetPriority(PendSV_IRQn, 4);
 	SCB->ICSR = SCB_ICSR_PENDSVCLR_Msk;
 }
@@ -289,7 +289,7 @@ int main(void) {
 	__disable_irq();
 	setConf_USART();
 	setConf_Thermal();
-	setConf_LCD();
+	setConf_PendSV();
 	__enable_irq();
 	while(1) {
 		
