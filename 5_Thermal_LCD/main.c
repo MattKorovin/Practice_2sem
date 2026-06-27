@@ -191,7 +191,7 @@ void heater(void) {
 			heaterStatus &= ~HEATER_ON;
 			// Âûחûגאול LCD
 		}
-		else if (!(heaterStatus & HEATER_ON) && (tempMedian < tempHeat - 8) && ((tempHeat - 8) < 0xFFF9)){
+		else if (!(heaterStatus & HEATER_ON) && (tempMedian < tempHeat - 8) && (tempHeat > 8)){
 			heaterStatus |= HEATER_ON;
 			// Âûחûגאול LCD
 		}
