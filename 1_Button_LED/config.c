@@ -1,0 +1,57 @@
+#include "config.h"
+#include "stm32f10x.h"
+
+void setSysClock(void) {
+	// Stavim 48MHz
+	RCC -> CR |= RCC_CR_HSEON;
+	while(READ_BIT(RCC -> CR, RCC_CR_HSERDY) == RESET) {
+	}
+	
+	FLASH -> ACR &= ~FLASH_ACR_PRFTBE;
+	FLASH -> ACR |= FLASH_ACR_PRFTBE;
+	
+	FLASH -> ACR &= ~FLASH_ACR_LATENCY;
+	FLASH -> ACR |= FLASH_ACR_LATENCY_1;
+	
+	RCC -> CFGR &= ~RCC_CFGR_HPRE;
+	RCC -> CFGR |= RCC_CFGR_HPRE_DIV1;
+	
+	RCC -> CFGR &= ~RCC_CFGR_PPRE2;
+	RCC -> CFGR |= RCC_CFGR_PPRE2_DIV1;
+	RCC -> CFGR &= ~RCC_CFGR_PPRE1;
+	RCC -> CFGR |= RCC_CFGR_PPRE1_DIV2;
+	
+	RCC -> CFGR &= (uint32_t) ((uint32_t) ~ (RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMULL));
+	RCC -> CFGR |= (uint32_t) (RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLMULL6);
+	
+	RCC -> CR |= RCC_CR_PLLON;
+	while(READ_BIT(RCC -> CR, RCC_CR_PLLRDY) != (RCC_CR_PLLRDY)) {
+	}
+	
+	RCC -> CFGR &= ~RCC_CFGR_SW;
+	RCC -> CFGR |= RCC_CFGR_SW_PLL; 
+	while(READ_BIT(RCC -> CFGR, RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {
+	}
+}
+
+
+
+void setPinConf(void) {
+	RCC -> APB2ENR |= RCC_APB2ENR_IOPBEN;
+	
+	GPIOB -> CRL &= ~GPIO_CRL_MODE2_0;
+	GPIOB -> CRL |= GPIO_CRL_MODE2_1;
+	
+	GPIOB -> CRL &= ~GPIO_CRL_CNF2_0;
+	GPIOB -> CRL &= ~GPIO_CRL_CNF2_1;
+	
+	
+	RCC -> APB2ENR |= RCC_APB2ENR_IOPAEN;
+	
+	GPIOA -> CRL &= ~GPIO_CRL_MODE0_0;
+	GPIOA -> CRL &= ~GPIO_CRL_MODE0_1;
+	
+	GPIOA -> CRL &= ~GPIO_CRL_CNF0_0;
+	GPIOA -> CRL |= GPIO_CRL_CNF0_1;
+}
+
